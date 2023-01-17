@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+	<title></title>
+</head>
+<style type="text/css">
+	#canvas-demo, #canvas-demo-1 {
+		border: 1px solid black;
+	}
+</style>
+<body>
+
+	<canvas id="canvas-demo" width="300" height="300">
+		This will be displayed if your browser doesn't support the canvas element. The closing tag is necessary.
+    </canvas>
+    <canvas id="canvas-demo-1" width="300" height="300" style="display: none;">
+		This will be displayed if your browser doesn't support the canvas element. The closing tag is necessary.
+    </canvas>
+    <img id="game-img" src="{{ url_for('static', filename='img/parquet.png') }}" style="display:none;" />
+    <div id="image-wrapper">
+	    <img class="var_img" id="parq-img-1" width="100" src="{{ url_for('static', filename='img/parquet/0.png') }}" />
+	    <img class="var_img" id="parq-img-2" width="100" src="{{ url_for('static', filename='img/parquet/1.png') }}" />
+	    <img class="var_img" id="parq-img-3" width="100" src="{{ url_for('static', filename='img/parquet/2.png') }}" />
+	    <img class="var_img" id="parq-img-4" width="100" src="{{ url_for('static', filename='img/parquet/3.png') }}" />
+    </div>
+
+    <div id="color-wrapper">
+    	<img class="var_color" id="red" data-rgba="255,0,0,1" width="50" height="50" src="{{ url_for('static', filename='img/color/red.png') }}" />
+    	<img class="var_color" id="blue" data-rgba="0,0,255,1" width="50" height="50" src="{{ url_for('static', filename='img/color/blue.png') }}" />
+    	<img class="var_color" id="green" data-rgba="60,179,113,1" width="50" height="50" src="{{ url_for('static', filename='img/color/green.png') }}" />
+    	<img class="var_color" id="magenta" data-rgba="233,30,99,1" width="50" height="50" src="{{ url_for('static', filename='img/color/magenta.png') }}" />
+    	<img class="var_color" id="orange" data-rgba="255,99,71,1" width="50" height="50" src="{{ url_for('static', filename='img/color/orange.png') }}" />
+    	
+    </div>
+
+    <script type="text/javascript">
+    	const demoCanvas = document.getElementById('canvas-demo').getContext('2d');
+    	const demoCanvas1 = document.getElementById('canvas-demo-1').getContext('2d');
+
+		window.onload = function() {
+		    
+			demoCanvas.beginPath();
+
+			var image1 = document.getElementById('parq-img-1');
+			demoCanvas.drawImage(image1, 0, 0, 160, 200);
+
+			var image2 = document.getElementById('parq-img-2');
+			demoCanvas.drawImage(image2, 0, 0, 160, 200);
+
+			var image3 = document.getElementById('parq-img-3');
+			demoCanvas.drawImage(image3, 0, 0, 160, 200);
+
+			var image4 = document.getElementById('parq-img-4');
+			demoCanvas.drawImage(image4, 0, 0, 160, 200);
+
+			demoCanvas.closePath();
+		    
+		}
+
+		$('.var_img').on('click', function(){
+			$(".var_img").removeClass("active");
+			$(this).addClass('active');
+		})
+
+		$('.var_color').on('click', function(){
+			$(".var_color").removeClass("active");
+			$(this).addClass('active');
+
+			var rgba = $(this).attr("data-rgba").split(',').map(Number);
+
+			var active_pattern_id = $('.var_img.active').attr("id");
+
+			if(active_pattern_id !== undefined){
+
+				demoCanvas1.fillStyle = 'rgba(0,0,0,0)';
+				demoCanvas1.clearRect(0, 0, 300, 300);
+				var image = document.getElementById(active_pattern_id);
+				demoCanvas1.drawImage(image, 0, 0, 160, 200);
+
+				var imgdata = demoCanvas.getImageData(0,0,160,200);
+				var imgdata1 = demoCanvas1.getImageData(0,0,160,200);
+
+	    		for (let i = 0; i < imgdata.data.length; i += 4) { // red, green, blue, and alpha
+	    			if(imgdata1.data[i + 0] != 0){
+	    				imgdata.data[i + 0] = rgba[0];
+	    			}
+	    			if(imgdata1.data[i + 1] != 0){
+	    				imgdata.data[i + 1] = rgba[1];
+	    			}
+	    			if(imgdata1.data[i + 2] != 0){
+	    				imgdata.data[i + 2] = rgba[2];
+	    			}
+	    			// if(imgdata1.data[i + 3] !== 0){
+	    			// 	imgdata.data[i + 3] = rgba[3];
+	    			// }
+		            
+			    }
+
+			    demoCanvas.putImageData(imgdata, 0, 0);
+			}
+		})
+
+		function addImageInCanvas(event){
+
+		}
+
+
+    </script>
+
+</body>
+<style type="text/css">
+	.var_img.active, .var_color.active {
+		border: 5px solid orangered;
+	}
+</style>
+</html>
