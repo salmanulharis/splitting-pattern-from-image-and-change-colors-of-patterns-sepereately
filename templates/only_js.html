@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+	<script src="{{ url_for('static', filename='js/Vibrant.js') }}"></script>
+	<title></title>
+</head>
+<style type="text/css">
+	#canvas-demo, #canvas-demo-1 {
+		border: 1px solid black;
+	}
+</style>
+<body>
+	<canvas id="og-canvas" width="300" height="300">
+		This will be displayed if your browser doesn't support the canvas element. The closing tag is necessary.
+    </canvas>
+	<canvas id="canvas-demo" width="300" height="300" style="display:none;">
+		This will be displayed if your browser doesn't support the canvas element. The closing tag is necessary.
+    </canvas>
+    <canvas id="canvas-demo-1" width="300" height="300" style="display:none;">
+		This will be displayed if your browser doesn't support the canvas element. The closing tag is necessary.
+    </canvas>
+    <img id="game-img" width="300" height="300" src="{{ url_for('static', filename='img/parquet/parquet.png') }}" style="display:none;" />
+
+    <div id="patterns-wrapper">
+    	
+    </div>
+
+
+    <div id="color-wrapper">
+    	<img class="var_color" id="red" data-rgba="255,0,0,1" width="50" height="50" src="{{ url_for('static', filename='img/color/red.png') }}" />
+    	<img class="var_color" id="blue" data-rgba="0,0,255,1" width="50" height="50" src="{{ url_for('static', filename='img/color/blue.png') }}" />
+    	<img class="var_color" id="green" data-rgba="60,179,113,1" width="50" height="50" src="{{ url_for('static', filename='img/color/green.png') }}" />
+    	<img class="var_color" id="magenta" data-rgba="233,30,99,1" width="50" height="50" src="{{ url_for('static', filename='img/color/magenta.png') }}" />
+    	<img class="var_color" id="orange" data-rgba="255,99,71,1" width="50" height="50" src="{{ url_for('static', filename='img/color/orange.png') }}" />
+    	
+    </div>
+
+    <script type="text/javascript">
+    	const demoCanvas = document.getElementById('canvas-demo').getContext('2d');
+    	const demoCanvas1 = document.getElementById('canvas-demo-1').getContext('2d');
+    	const ogCanvas = document.getElementById('og-canvas').getContext('2d');
+
+		window.onload = function() {
+		    
+			demoCanvas.beginPath();
+
+			var image = document.getElementById('game-img');
+			demoCanvas.filter = 'grayscale(1)';
+			demoCanvas.drawImage(image, 0, 0, 160, 200);
+
+			var imgdata = demoCanvas.getImageData(0,0,160,200);
+			rgbArray = {};
+
+			for (let i = 0; i < imgdata.data.length; i += 4) { // red, green, blue, and alpha
+				const r = imgdata.data[i + 0];
+				const g = imgdata.data[i + 1];
+				const b = imgdata.data[i + 2];
+				const a = imgdata.data[i + 3];
+
+				var rgbData = imgdata.data[i + 0] + ',' + imgdata.data[i + 1] + ',' + imgdata.data[i + 2]
+
+				rgbArray[rgbData] = (rgbArray[rgbData] || 0) + 1;
+	            
+		    }
+
+		    demoCanvas.putImageData(imgdata, 0, 0);
+		    
+
+		    for(var k in rgbArray){
+		    	if(rgbArray[k] > 2000){
+		    		console.log(k);
+		    		var image = document.getElementById('game-img');
+		    		demoCanvas1.drawImage(image, 0, 0, 160, 200);
+
+		    		var imgdata1 = demoCanvas1.getImageData(0,0,160,200);
+
+		    		for (let i = 0; i < imgdata1.data.length; i += 4) { // red, green, blue, and alpha
+						const r = imgdata.data[i + 0];
+						const g = imgdata.data[i + 1];
+						const b = imgdata.data[i + 2];
+						const a = imgdata.data[i + 3];
+
+						var arr = k.split(',');
+
+						if(r == arr[0] && g == arr[1] && b == arr[2]){
+							// console.log("spotted");
+						}else{
+							imgdata1.data[i + 0] = 0;
+							imgdata1.data[i + 1] = 0;
+							imgdata1.data[i + 2] = 0;
+							imgdata1.data[i + 3] = 0;
+						}
+			            
+				    }
+
+				    demoCanvas1.putImageData(imgdata1, 0, 0);
+
+				    var exImage = new Image();
+				    can = document.getElementById('canvas-demo-1')
+				    exImage.src = can.toDataURL("image/png");
+				    $(exImage).attr({ 
+				    	id:k,
+					    class:'pat-image'
+					})
+				    $(exImage).width(160).height(200);
+				    $('#patterns-wrapper').append(exImage);
+		    	}
+		    	
+		    }
+
+		    $('.pat-image').on('click', function(){
+				$(".pat-image").removeClass("active");
+				$(this).addClass('active');
+			})
+
+
+		    var og_image = document.getElementById('game-img');
+		    ogCanvas.drawImage(og_image, 0, 0, 160, 200);
+
+		    $('.var_color').on('click', function(){
+				$(".var_color").removeClass("active");
+				$(this).addClass('active');
+
+				var rgba = $(this).attr("data-rgba").split(',').map(Number);
+
+				var active_pattern_id = $('.pat-image.active').attr("id");
+
+				if(active_pattern_id !== undefined){
+
+					demoCanvas1.fillStyle = 'rgba(0,0,0,0)';
+					demoCanvas1.clearRect(0, 0, 300, 300);
+
+					var imgdatablk = demoCanvas.getImageData(0,0,160,200);
+					var imgdata1 = ogCanvas.getImageData(0,0,160,200);
+					var blkrgba = active_pattern_id.split(',').map(Number);
+
+		    		for (let i = 0; i < imgdata.data.length; i += 4) { // red, green, blue, and alpha
+		    			if(imgdatablk.data[i + 0] == blkrgba[0]){
+		    				imgdata1.data[i + 0] = rgba[0];
+		    			}
+		    			if(imgdatablk.data[i + 1] == blkrgba[1]){
+		    				imgdata1.data[i + 1] = rgba[1];
+		    			}
+		    			if(imgdatablk.data[i + 2] == blkrgba[2]){
+		    				imgdata1.data[i + 2] = rgba[2];
+		    			}
+			            
+				    }
+				    // demoCanvas1.putImageData(imgdata1, 0, 0)
+				    ogCanvas.putImageData(imgdata1, 0, 0);
+				}
+			})
+
+
+			demoCanvas.closePath();
+		    
+		}
+
+
+    </script>
+
+</body>
+<style type="text/css">
+	.var_img.active, .var_color.active, .pat-image.active {
+		border: 5px solid orangered;
+	}
+</style>
+</html>
