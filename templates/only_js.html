@@ -22,6 +22,9 @@
     <canvas id="canvas-demo-1" width="160" height="200" style="display:none;">
 		This will be displayed if your browser doesn't support the canvas element. The closing tag is necessary.
     </canvas>
+    <canvas id="color-canvas" width="160" height="200" style="display:none;">
+		This will be displayed if your browser doesn't support the canvas element. The closing tag is necessary.
+    </canvas>
     <img id="game-img" width="300" height="300" src="{{ url_for('static', filename='img/parquet.png') }}" style="display:none;" />
 
     <div id="patterns-wrapper">
@@ -30,11 +33,14 @@
 
 
     <div id="color-wrapper">
-    	<img class="var_color" id="red" data-rgba="255,0,0,1" width="50" height="50" src="{{ url_for('static', filename='img/color/red.png') }}" />
-    	<img class="var_color" id="blue" data-rgba="0,0,255,1" width="50" height="50" src="{{ url_for('static', filename='img/color/blue.png') }}" />
-    	<img class="var_color" id="green" data-rgba="60,179,113,1" width="50" height="50" src="{{ url_for('static', filename='img/color/green.png') }}" />
-    	<img class="var_color" id="magenta" data-rgba="233,30,99,1" width="50" height="50" src="{{ url_for('static', filename='img/color/magenta.png') }}" />
-    	<img class="var_color" id="orange" data-rgba="255,99,71,1" width="50" height="50" src="{{ url_for('static', filename='img/color/orange.png') }}" />
+    	<img class="var_color" id="red" width="50" height="50" src="{{ url_for('static', filename='img/color/red.png') }}" />
+    	<img class="var_color" id="blue" width="50" height="50" src="{{ url_for('static', filename='img/color/blue.png') }}" />
+    	<img class="var_color" id="green" width="50" height="50" src="{{ url_for('static', filename='img/color/green.png') }}" />
+    	<img class="var_color" id="magenta" width="50" height="50" src="{{ url_for('static', filename='img/color/magenta.png') }}" />
+    	<img class="var_color" id="yellow" width="50" height="50" src="{{ url_for('static', filename='img/color/yellow.png') }}" />
+    	<img class="var_color" id="orange" width="50" height="50" src="{{ url_for('static', filename='img/color/orange.png') }}" />
+    	<img class="var_color" id="colorful" width="50" height="50" src="{{ url_for('static', filename='img/color/40694.png') }}" />
+    	<img class="var_color" id="honeycomp" width="50" height="50" src="{{ url_for('static', filename='img/color/honeycomp.png') }}" />
     	
     </div>
 
@@ -42,6 +48,7 @@
     	const demoCanvas = document.getElementById('canvas-demo').getContext('2d');
     	const demoCanvas1 = document.getElementById('canvas-demo-1').getContext('2d');
     	const ogCanvas = document.getElementById('og-canvas').getContext('2d');
+    	const colorCanvas = document.getElementById('color-canvas').getContext('2d');
 
 		window.onload = function() {
 		    
@@ -114,6 +121,7 @@
 		    $('.pat-image').on('click', function(){
 				$(".pat-image").removeClass("active");
 				$(this).addClass('active');
+				$(".var_color").removeClass("active");
 			})
 
 
@@ -124,8 +132,11 @@
 				$(".var_color").removeClass("active");
 				$(this).addClass('active');
 
-				var rgba = $(this).attr("data-rgba").split(',').map(Number);
+				var color_id = $(this).attr('id');
+				var color = document.getElementById(color_id);
+				colorCanvas.drawImage(color, 0, 0, 160, 200);
 
+				// var rgba = $(this).attr("data-rgba").split(',').map(Number);
 				var active_pattern_id = $('.pat-image.active').attr("id");
 
 				if(active_pattern_id !== undefined){
@@ -136,16 +147,20 @@
 					var imgdatablk = demoCanvas.getImageData(0,0,160,200);
 					var imgdata1 = ogCanvas.getImageData(0,0,160,200);
 					var blkrgba = active_pattern_id.split(',').map(Number);
+					var color_data = colorCanvas.getImageData(0,0,160,200);
 
 		    		for (let i = 0; i < imgdata.data.length; i += 4) { // red, green, blue, and alpha
 		    			if(imgdatablk.data[i + 0] == blkrgba[0]){
-		    				imgdata1.data[i + 0] = rgba[0];
+		    				imgdata1.data[i + 0] = color_data.data[i + 0];
+		    				// imgdata1.data[i + 0] = rgba[0];
 		    			}
 		    			if(imgdatablk.data[i + 1] == blkrgba[1]){
-		    				imgdata1.data[i + 1] = rgba[1];
+		    				imgdata1.data[i + 1] = color_data.data[i + 1];
+		    				// imgdata1.data[i + 1] = rgba[1];
 		    			}
 		    			if(imgdatablk.data[i + 2] == blkrgba[2]){
-		    				imgdata1.data[i + 2] = rgba[2];
+		    				imgdata1.data[i + 2] = color_data.data[i + 2];
+		    				// imgdata1.data[i + 2] = rgba[2];
 		    			}
 			            
 				    }

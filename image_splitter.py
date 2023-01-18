@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-img = cv2.imread("parquet.png")
+img = cv2.imread("static/img/unnamed.jpg")
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 hist = cv2.calcHist([gray],[0],None,[256],[0,256])
 colors = np.where(hist>5000)
