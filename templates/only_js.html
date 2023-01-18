@@ -25,7 +25,7 @@
     <canvas id="color-canvas" width="160" height="200" style="display:none;">
 		This will be displayed if your browser doesn't support the canvas element. The closing tag is necessary.
     </canvas>
-    <img id="game-img" width="300" height="300" src="{{ url_for('static', filename='img/parquet.png') }}" style="display:none;" />
+    <img id="game-img" width="300" height="300" src="{{ url_for('static', filename='img/red10.png') }}" style="display:none;" />
 
     <div id="patterns-wrapper">
     	
@@ -55,7 +55,8 @@
 			demoCanvas.beginPath();
 
 			var image = document.getElementById('game-img');
-			demoCanvas.filter = 'grayscale(1)';
+			demoCanvas.filter = 'blur(1px) contrast(1000%) brightness(100%)';
+			demoCanvas.imageSmoothingEnabled = false;
 			demoCanvas.drawImage(image, 0, 0, 160, 200);
 
 			var imgdata = demoCanvas.getImageData(0,0,160,200);
@@ -139,33 +140,38 @@
 				// var rgba = $(this).attr("data-rgba").split(',').map(Number);
 				var active_pattern_id = $('.pat-image.active').attr("id");
 
+
 				if(active_pattern_id !== undefined){
 
 					demoCanvas1.fillStyle = 'rgba(0,0,0,0)';
 					demoCanvas1.clearRect(0, 0, 300, 300);
 
-					var imgdatablk = demoCanvas.getImageData(0,0,160,200);
-					var imgdata1 = ogCanvas.getImageData(0,0,160,200);
-					var blkrgba = active_pattern_id.split(',').map(Number);
+					var active_pattern = document.getElementById(active_pattern_id);
+					demoCanvas1.drawImage(active_pattern, 0, 0, 160, 200);
+
+					// var imgdatablk = demoCanvas.getImageData(0,0,160,200);
+					// var blkrgba = active_pattern_id.split(',').map(Number);
+					var imgdata = ogCanvas.getImageData(0,0,160,200);
 					var color_data = colorCanvas.getImageData(0,0,160,200);
+					var pattern_data = demoCanvas1.getImageData(0,0,160,200);
 
 		    		for (let i = 0; i < imgdata.data.length; i += 4) { // red, green, blue, and alpha
-		    			if(imgdatablk.data[i + 0] == blkrgba[0]){
-		    				imgdata1.data[i + 0] = color_data.data[i + 0];
-		    				// imgdata1.data[i + 0] = rgba[0];
+		    			if(pattern_data.data[i + 0] > 0){
+		    				imgdata.data[i + 0] = color_data.data[i + 0];
+		    				// imgdata.data[i + 0] = rgba[0];
 		    			}
-		    			if(imgdatablk.data[i + 1] == blkrgba[1]){
-		    				imgdata1.data[i + 1] = color_data.data[i + 1];
-		    				// imgdata1.data[i + 1] = rgba[1];
+		    			if(pattern_data.data[i + 1] > 0){
+		    				imgdata.data[i + 1] = color_data.data[i + 1];
+		    				// imgdata.data[i + 1] = rgba[1];
 		    			}
-		    			if(imgdatablk.data[i + 2] == blkrgba[2]){
-		    				imgdata1.data[i + 2] = color_data.data[i + 2];
-		    				// imgdata1.data[i + 2] = rgba[2];
+		    			if(pattern_data.data[i + 2] > 0){
+		    				imgdata.data[i + 2] = color_data.data[i + 2];
+		    				// imgdata.data[i + 2] = rgba[2];
 		    			}
 			            
 				    }
-				    // demoCanvas1.putImageData(imgdata1, 0, 0)
-				    ogCanvas.putImageData(imgdata1, 0, 0);
+				    // demoCanvas1.putImageData(imgdata, 0, 0)
+				    ogCanvas.putImageData(imgdata, 0, 0);
 				}
 			})
 
