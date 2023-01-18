@@ -13,16 +13,16 @@
 	}
 </style>
 <body>
-	<canvas id="og-canvas" width="300" height="300">
+	<canvas id="og-canvas" width="160" height="200">
 		This will be displayed if your browser doesn't support the canvas element. The closing tag is necessary.
     </canvas>
-	<canvas id="canvas-demo" width="300" height="300" style="display:none;">
+	<canvas id="canvas-demo" width="160" height="200" style="display:none;">
 		This will be displayed if your browser doesn't support the canvas element. The closing tag is necessary.
     </canvas>
-    <canvas id="canvas-demo-1" width="300" height="300" style="display:none;">
+    <canvas id="canvas-demo-1" width="160" height="200" style="display:none;">
 		This will be displayed if your browser doesn't support the canvas element. The closing tag is necessary.
     </canvas>
-    <img id="game-img" width="300" height="300" src="{{ url_for('static', filename='img/parquet/parquet.png') }}" style="display:none;" />
+    <img id="game-img" width="300" height="300" src="{{ url_for('static', filename='img/parquet.png') }}" style="display:none;" />
 
     <div id="patterns-wrapper">
     	
@@ -105,7 +105,7 @@
 				    	id:k,
 					    class:'pat-image'
 					})
-				    $(exImage).width(160).height(200);
+				    $(exImage).width(80).height(100);
 				    $('#patterns-wrapper').append(exImage);
 		    	}
 		    	
